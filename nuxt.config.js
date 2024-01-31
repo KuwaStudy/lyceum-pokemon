@@ -4,8 +4,9 @@ import { defineNuxtConfig } from "nuxt/config";
 export default defineNuxtConfig({
   css: ["animate.css"],
   runtimeConfig: {
-    region: "ap-northeast-1",
-    bucketName: "",
+    //region: "ap-northeast-1",
+    region: "ap-southeast-2",
+    bucketName: "km-sd18-se2",
     public: {
       backendOrigin: undefined,
     },
