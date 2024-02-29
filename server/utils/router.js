@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { findTrainers, upsertTrainer } from "~/server/utils/trainer";
+import { findTrainers, getTrainer, upsertTrainer, deleteTrainer } from "~/server/utils/trainer";
 import { findPokemon } from "~/server/utils/pokemon";
 
 const router = Router();
@@ -12,7 +12,6 @@ router.get("/hello", (_req, res) => {
 router.get("/trainers", async (_req, res, next) => {
   try {
     const trainers = await findTrainers();
-    // TODO: 期待するレスポンスボディに変更する
     res.send(trainers);
   } catch (err) {
     next(err);
@@ -23,6 +22,11 @@ router.get("/trainers", async (_req, res, next) => {
 router.post("/trainer", async (req, res, next) => {
   try {
     // TODO: リクエストボディにトレーナー名が含まれていなければ400を返す
+    if (!req.body.name) {
+      res.status(400).send(null);
+    } else {
+      console.log(req.body.name);
+    }
     // TODO: すでにトレーナー（S3 オブジェクト）が存在していれば409を返す
     const result = await upsertTrainer(req.body.name, req.body);
     res.status(result["$metadata"].httpStatusCode).send(result);
@@ -32,22 +36,43 @@ router.post("/trainer", async (req, res, next) => {
 });
 
 /** トレーナーの取得 */
-// TODO: トレーナーを取得する API エンドポイントの実装
+router.get("/trainer/:trainerName", async (req, res, next) => {
+  try {
+    const { trainerName } = req.params;
+    const trainer = await getTrainer(trainerName);
+    res.send(trainer);
+  } catch (err) {
+    next(err);
+  }
+});
 
 /** トレーナーの更新 */
 router.post("/trainer/:trainerName", async (req, res, next) => {
   try {
     const { trainerName } = req.params;
     // TODO: トレーナーが存在していなければ404を返す
-    const result = await upsertTrainer(trainerName, req.body);
-    res.status(result["$metadata"].httpStatusCode).send(result);
+    const trainer = await getTrainer(trainerName);
+    if (!trainer || trainer.name) {
+      res.status(404).send(trainer);
+    } else {
+      const result = await upsertTrainer(trainerName, req.body);
+      res.status(result["$metadata"].httpStatusCode).send(result);
+    }
   } catch (err) {
     next(err);
   }
 });
 
 /** トレーナーの削除 */
-// TODO: トレーナーを削除する API エンドポイントの実装
+router.delete("/trainer/:trainerName", async (req, res, next) => {
+  try {
+    const { trainerName } = req.params;
+    const result = await deleteTrainer(trainerName);
+    res.status(result["$metadata"].httpStatusCode).send(result);
+  } catch (err) {
+    next(err);
+  }
+});
 
 /** ポケモンの追加 */
 router.post("/trainer/:trainerName/pokemon", async (req, res, next) => {

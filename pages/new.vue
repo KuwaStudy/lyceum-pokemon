@@ -1,4 +1,24 @@
-<script setup></script>
+<script setup>
+const router = useRouter();
+const config = useRuntimeConfig();
+const { dialog, onOpen, onClose } = useDialog();
+const trainerName = ref("");
+const safeTrainerName = computed(() => trimAvoidCharacters(trainerName.value));
+const valid = computed(() => { return safeTrainerName.value.length > 0;})
+const onSubmit = async () => {
+    const response = await $fetch("/api/trainer", {
+    baseURL: config.public.backendOrigin,
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      name: safeTrainerName.value,
+    }),
+  }).catch((e) => e);
+  router.push(`/trainer/${safeTrainerName.value}`);
+}
+</script>
 
 <template>
   <div>
@@ -18,6 +38,22 @@
     <GamifyButton type="button" :disabled="!valid" @click="onOpen(true)"
       >けってい</GamifyButton>
    </form>
+   <GamifyDialog
+     v-if="dialog"
+     id="confirm-submit"
+     title="かくにん"
+     :description="`ふむ・・・　きみは　${trainerName}　と　いうんだな！`"
+     @close="onClose"
+   >
+     <GamifyList :border="false" direction="horizon">
+        <GamifyItem>
+          <GamifyButton @click="onClose">いいえ</GamifyButton>
+        </GamifyItem>
+        <GamifyItem>
+          <GamifyButton @click="onSubmit">はい</GamifyButton>
+        </GamifyItem>
+      </GamifyList>
+   </GamifyDialog>
   </div>
 </template>
 

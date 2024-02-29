@@ -1,5 +1,13 @@
 <script setup>
-const { data: trainersJson } = await useFetch("api/trainers");
+const config = useRuntimeConfig();
+const { data: trainersJson } = await useTrainers();
+const onDelete = async (key) => {
+  const response = await $fetch(`/api/trainer/${key.replace(/\.json$/,"")}`, {
+    baseURL: config.public.backendOrigin,
+    method: "DELETE",
+  }).catch((e) => e);
+  location.reload();
+}
 </script>
 
 <template>
@@ -9,6 +17,7 @@ const { data: trainersJson } = await useFetch("api/trainers");
       <tr>
         <th>名前</th>
         <th>更新日</th>
+        <th>さよならする</th>
       </tr>
       <tr v-for="trainer in trainersJson" :key="trainer">
         <td>
@@ -16,6 +25,9 @@ const { data: trainersJson } = await useFetch("api/trainers");
         </td>
         <td>
           {{ new Date(trainer.LastModified).toLocaleString() }}
+        </td>
+        <td>
+          <GamifyButton type="button" @click="onDelete(trainer.Key)">さよなら</GamifyButton>
         </td>
       </tr>
     </table>
