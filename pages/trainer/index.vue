@@ -12,7 +12,7 @@ const onDelete = async (key) => {
 
 <template>
   <div>
-    <h1>トレイナー</h1>
+    <h1>トレーナー</h1>
     <table>
       <tr>
         <th>名前</th>
