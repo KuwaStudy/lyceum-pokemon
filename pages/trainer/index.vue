@@ -1,4 +1,5 @@
 <script setup>
+const router = useRouter();
 const config = useRuntimeConfig();
 const { data: trainersJson } = await useTrainers();
 const onDelete = async (key) => {
@@ -13,6 +14,9 @@ const onDelete = async (key) => {
 <template>
   <div>
     <h1>トレーナー</h1>
+    <GamifyButton type="button" @click="router.push('/')">戻る</GamifyButton>
+    <br/>
+    <br/>
     <table>
       <tr>
         <th>名前</th>
