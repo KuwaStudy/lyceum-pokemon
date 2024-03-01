@@ -2,6 +2,12 @@
 const router = useRouter();
 const config = useRuntimeConfig();
 const { data: trainersJson } = await useTrainers();
+const pokemons = {};
+for (const item in trainersJson.value) {
+    const { data: result } = await useTrainer(trainersJson.value[item].Key);
+    console.log(result.value);
+    pokemons[trainersJson.value[item].Key] = result.value.pokemons.length;
+}
 const onDelete = async (key) => {
   const response = await $fetch(`/api/trainer/${key.replace(/\.json$/,"")}`, {
     baseURL: config.public.backendOrigin,
@@ -20,12 +26,16 @@ const onDelete = async (key) => {
     <table>
       <tr>
         <th>名前</th>
+        <th>取得したポケモンの数</th>
         <th>更新日</th>
         <th>さよならする</th>
       </tr>
       <tr v-for="trainer in trainersJson" :key="trainer">
         <td>
           <NuxtLink :to="`/trainer/${trainer.Key}`">{{ trainer.Key.replace(/\.json$/,"")}}</NuxtLink> 
+        </td>
+        <td>
+          {{ pokemons[trainer.Key] }}
         </td>
         <td>
           {{ new Date(trainer.LastModified).toLocaleString() }}
