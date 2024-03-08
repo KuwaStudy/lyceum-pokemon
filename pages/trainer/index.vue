@@ -20,15 +20,13 @@ const onDelete = async (key) => {
 <template>
   <div>
     <h1>トレーナー</h1>
-    <GamifyButton type="button" @click="router.push('/')">戻る</GamifyButton>
-    <br/>
-    <br/>
     <table>
       <tr>
         <th>名前</th>
         <th>取得したポケモンの数</th>
         <th>更新日</th>
         <th>さよならする</th>
+        <th>捕まえる</th>
       </tr>
       <tr v-for="trainer in trainersJson" :key="trainer">
         <td>
@@ -42,6 +40,9 @@ const onDelete = async (key) => {
         </td>
         <td>
           <GamifyButton type="button" @click="onDelete(trainer.Key)">さよなら</GamifyButton>
+        </td>
+        <td>
+          <CatchButton :to="`/trainer/${trainer.Key}/catch`">ポケモンをつかまえる</CatchButton>
         </td>
       </tr>
     </table>

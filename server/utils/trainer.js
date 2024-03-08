@@ -54,3 +54,4 @@ export const deleteTrainer = async (name) => {
   );
   return result;
 };
+
